@@ -5,4 +5,3 @@ import './js/renderBoard';
 import './js/dragAndDrop';
 import './js/deleteCard';
 import './js/addCard';
-
