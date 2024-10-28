@@ -4,6 +4,7 @@ import addCard from './addCard';
 import deleteCard from './deleteCard';
 import { onDragStart, onDragOver, onDrop } from './dragAndDrop';
 
+
 const boardData = JSON.parse(localStorage.getItem('boardData')) || {
   todo: [],
   inProgress: [],
