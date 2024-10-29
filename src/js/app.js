@@ -6,71 +6,95 @@ document.addEventListener("DOMContentLoaded", () => {
       const clickedBtn = e.currentTarget;
       const cardContainer = clickedBtn.previousElementSibling;
 
-      // Создаем карточку
       const cardEl = document.createElement("div");
       cardEl.className = "card";
 
-      // Создаем текстовое поле для ввода текста
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = "Введите текст...";
       input.className = "cardInput";
 
-      // Добавляем обработчик события для нажатия клавиши Enter
       input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           const cardText = input.value.trim();
           if (cardText) {
-            // Устанавливаем текст карточки и очищаем поле ввода
             cardEl.textContent = cardText;
-            cardEl.appendChild(deleteBtn); // Добавляем кнопку удаления
-            cardContainer.appendChild(cardEl); // Добавляем карточку в контейнер
+            cardEl.appendChild(deleteBtn);
+            cardContainer.appendChild(cardEl);
           }
         }
       });
 
-      // Добавляем кнопку удаления карточки
       const deleteBtn = document.createElement("span");
-      deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; // Используем иконку FontAwesome для крестика
-      deleteBtn.className = "delete-btn"; // Назначаем класс для кнопки удаления
+      deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+      deleteBtn.className = "delete-btn";
       deleteBtn.onclick = () => {
-        cardContainer.removeChild(cardEl); // Удаляем карточку при нажатии на кнопку
+        cardContainer.removeChild(cardEl);
       };
 
-      // Добавляем текстовое поле в карточку
       cardEl.appendChild(input);
-      cardContainer.appendChild(cardEl); // Добавляем карточку в контейнер
-      input.focus(); // Фокусируемся на поле ввода
+      cardContainer.appendChild(cardEl);
+      input.focus();
     });
   });
 
-  // логика перетаскивания
-  const cardCont = document.querySelector(".card-container");
-  const cardElements = cardCont.querySelector(".card");
-  let actualEl;
+  // Логика перетаскивания карточек
+  let draggedEl = null;
+  let offsetX = 0;
+  let offsetY = 0;
+  let initialContainer = null;
 
-  const onMouseOver = (event) => {
-    actualEl.style.top = event.clientY + "px";
-    actualEl.style.left = event.clientX + "px";
-  };
-
-  const onMouseUp = (e) => {
-    const mouseUpItem = e.target;
-    cardCont.insertBefore(actualEl, mouseUpItem);
-
-    actualEl.classList.remove("dragged");
-    actualEl = undefined;
-    document.documentElement.removeEventListener("mouseup", onMouseUp);
-    document.documentElement.removeEventListener("mouseover", onMouseOver);
-  };
-
-  cardCont.addEventListener("mousedown", (e) => {
+  document.addEventListener("mousedown", (e) => {
     e.preventDefault();
-    actualEl = e.target;
 
-    actualEl.classList.add("dragged");
+    if (e.target.classList.contains("card")) {
+      draggedEl = e.target;
+      const rect = draggedEl.getBoundingClientRect();
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
 
-    document.documentElement.addEventListener("mouseup", onMouseUp);
-    document.documentElement.addEventListener("mouseover", onMouseOver);
+      initialContainer = draggedEl.parentNode;
+      draggedEl.style.position = "absolute"; // Устанавливаем позиционирование
+      draggedEl.style.zIndex = "1000"; // Повышаем z-index
+      moveAt(e.pageX, e.pageY);
+    }
+  });
+
+  function moveAt(pageX, pageY) {
+    draggedEl.style.left = pageX - offsetX + "px";
+    draggedEl.style.top = pageY - offsetY + "px";
+  }
+
+  document.addEventListener("mousemove", (e) => {
+    if (draggedEl) {
+      moveAt(e.pageX, e.pageY);
+      draggedEl.style.cursor = "grabbing"; // Курсор при перетаскивании
+    }
+  });
+
+  document.addEventListener("mouseup", (e) => {
+    e.preventDefault();
+    if (draggedEl) {
+      draggedEl.style.cursor = "grab"; // Возвращаем курсор
+      const columnUnder = document
+        .elementFromPoint(e.clientX, e.clientY)
+        .closest(".column");
+      const cardContainer = columnUnder
+        ? columnUnder.querySelector(".card-container")
+        : null;
+
+      if (cardContainer) {
+        cardContainer.appendChild(draggedEl);
+      } else {
+        initialContainer.appendChild(draggedEl); // Возвращаем карточку в первоначальный контейнер
+      }
+
+      // Сбросим все стили позиционирования
+      draggedEl.style.position = "";
+      draggedEl.style.zIndex = "";
+      draggedEl.style.left = "";
+      draggedEl.style.top = "";
+      draggedEl = null;
+    }
   });
 });
