@@ -82,5 +82,12 @@ body {
   cursor: not-allowed; /* Указатель "не разрешено" */
 }
 
+.card.dragged{
+  border-radius: 10px;
+  position: absolute;
+  z-index: 999;
+  pointer-events: none;
+  background: #69d152;
+}
 
 /*# sourceMappingURL=style.css.map*/
