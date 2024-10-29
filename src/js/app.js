@@ -1,28 +1,46 @@
-// app.js
-import renderBoard from './renderBoard';
-import addCard from './addCard';
-import deleteCard from './deleteCard';
-import { onDragStart, onDragOver, onDrop } from './dragAndDrop';
+document.addEventListener("DOMContentLoaded", () => {
+  const addCardBtn = document.querySelectorAll(".addCardBtn");
 
+  addCardBtn.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const clickedBtn = e.currentTarget;
+      const cardContainer = clickedBtn.previousElementSibling;
 
-const boardData = JSON.parse(localStorage.getItem('boardData')) || {
-  todo: [],
-  inProgress: [],
-  done: [],
-};
+      // Создаем карточку
+      const cardEl = document.createElement("div");
+      cardEl.className = "card";
 
-const columns = [
-  { title: 'To Do', key: 'todo' },
-  { title: 'In Progress', key: 'inProgress' },
-  { title: 'Done', key: 'done' },
-];
+      // Создаем текстовое поле для ввода текста
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Введите текст...";
+      input.className = "cardInput";
 
-const container = document.getElementById('board');
+      // Добавляем обработчик события для нажатия клавиши Enter
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          const cardText = input.value.trim();
+          if (cardText) {
+            // Устанавливаем текст карточки и очищаем поле ввода
+            cardEl.textContent = cardText;
+            cardEl.appendChild(deleteBtn); // Добавляем кнопку удаления
+            cardContainer.appendChild(cardEl); // Добавляем карточку в контейнер
+          }
+        }
+      });
 
-// Вызовите функцию renderBoard после загрузки данных
-renderBoard(boardData, columns, container, onDragStart, onDragOver, onDrop, deleteCard);
+      // Добавляем кнопку удаления карточки
+      const deleteBtn = document.createElement("span");
+      deleteBtn.innerHTML = '<i class="fas fa-times"></i>'; // Используем иконку FontAwesome для крестика
+      deleteBtn.className = "delete-btn"; // Назначаем класс для кнопки удаления
+      deleteBtn.onclick = () => {
+        cardContainer.removeChild(cardEl); // Удаляем карточку при нажатии на кнопку
+      };
 
-// Пример добавления карточки в первую колонку
-document.getElementById('add-card-todo').addEventListener('click', () => addCard(boardData, 'todo', container, renderBoard));
-document.getElementById('add-card-in-progress').addEventListener('click', () => addCard(boardData, 'inProgress', container, renderBoard));
-document.getElementById('add-card-done').addEventListener('click', () => addCard(boardData, 'done', container, renderBoard));
+      // Добавляем текстовое поле в карточку
+      cardEl.appendChild(input);
+      cardContainer.appendChild(cardEl); // Добавляем карточку в контейнер
+      input.focus(); // Фокусируемся на поле ввода
+    });
+  });
+});
