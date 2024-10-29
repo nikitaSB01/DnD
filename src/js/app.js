@@ -43,4 +43,34 @@ document.addEventListener("DOMContentLoaded", () => {
       input.focus(); // Фокусируемся на поле ввода
     });
   });
+
+  // логика перетаскивания
+  const cardCont = document.querySelector(".card-container");
+  const cardElements = cardCont.querySelector(".card");
+  let actualEl;
+
+  const onMouseOver = (event) => {
+    actualEl.style.top = event.clientY + "px";
+    actualEl.style.left = event.clientX + "px";
+  };
+
+  const onMouseUp = (e) => {
+    const mouseUpItem = e.target;
+    cardCont.insertBefore(actualEl, mouseUpItem);
+
+    actualEl.classList.remove("dragged");
+    actualEl = undefined;
+    document.documentElement.removeEventListener("mouseup", onMouseUp);
+    document.documentElement.removeEventListener("mouseover", onMouseOver);
+  };
+
+  cardCont.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    actualEl = e.target;
+
+    actualEl.classList.add("dragged");
+
+    document.documentElement.addEventListener("mouseup", onMouseUp);
+    document.documentElement.addEventListener("mouseover", onMouseOver);
+  });
 });
