@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   const addCardBtn = document.querySelectorAll(".addCardBtn");
 
+  // Восстанавливаем сохраненные карточки
+  loadCardsFromLocalStorage();
+
   addCardBtn.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const clickedBtn = e.currentTarget;
@@ -21,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cardEl.textContent = cardText;
             cardEl.appendChild(deleteBtn);
             cardContainer.appendChild(cardEl);
+
+            saveCardsToLocalStorage(); // Сохраняем после добавления карточки
           }
         }
       });
@@ -29,8 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
       deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
       deleteBtn.className = "delete-btn";
       deleteBtn.onclick = (e) => {
-        const card = e.target.closest(".card"); // находим ближайшего родителя с классом "card"
-        card.parentNode.removeChild(card); // удаляем найденный элемент
+        const card = e.target.closest(".card");
+        card.parentNode.removeChild(card);
+        saveCardsToLocalStorage(); // Сохраняем после удаления карточки
       };
 
       cardEl.appendChild(input);
@@ -74,7 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("mousemove", (e) => {
     if (draggedEl) {
       moveAt(e.pageX, e.pageY);
-      // Убираем указатель для всех карт и кнопок, кроме перетаскиваемой
       document.querySelectorAll(".card, .addCardBtn").forEach((el) => {
         if (el !== draggedEl) el.classList.add("no-pointer");
       });
@@ -83,8 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("mouseup", (e) => {
     e.preventDefault();
-
-    // Включаем обратно указатель для всех карт и кнопок
     document.querySelectorAll(".card, .addCardBtn").forEach((el) => {
       el.classList.remove("no-pointer");
     });
@@ -98,27 +101,64 @@ document.addEventListener("DOMContentLoaded", () => {
         : null;
 
       if (cardContainer) {
-        // Вставка карточки в нужное место в колонне
         const mouseUpItem = document.elementFromPoint(e.clientX, e.clientY);
         if (mouseUpItem && mouseUpItem.classList.contains("card")) {
           const bounding = mouseUpItem.getBoundingClientRect();
-          // Проверяем, если курсор выше или ниже середины карточки
           if (e.clientY < bounding.top + bounding.height / 2) {
-            cardContainer.insertBefore(draggedEl, mouseUpItem); // Вставляем перед карточкой
+            cardContainer.insertBefore(draggedEl, mouseUpItem);
           } else {
-            cardContainer.insertBefore(draggedEl, mouseUpItem.nextSibling); // Вставляем после карточки
+            cardContainer.insertBefore(draggedEl, mouseUpItem.nextSibling);
           }
         } else {
-          cardContainer.appendChild(draggedEl); // Если курсор не над карточкой, добавляем в конец
+          cardContainer.appendChild(draggedEl);
         }
       } else {
-        initialContainer.appendChild(draggedEl); // Возвращаем карточку в первоначальный контейнер
+        initialContainer.appendChild(draggedEl);
       }
 
       draggedEl.classList.remove("dragged");
       document.documentElement.style.cursor = "";
 
+      saveCardsToLocalStorage(); // Сохраняем после перетаскивания карточки
       draggedEl = null;
     }
   });
+
+  // Функция для сохранения карточек в LocalStorage
+  function saveCardsToLocalStorage() {
+    const columns = document.querySelectorAll(".column");
+    const data = Array.from(columns).map((column) => {
+      const cards = column.querySelectorAll(".card");
+      return Array.from(cards).map((card) => card.textContent.trim());
+    });
+    localStorage.setItem("kanbanCards", JSON.stringify(data));
+  }
+
+  // Функция для загрузки карточек из LocalStorage
+  function loadCardsFromLocalStorage() {
+    const data = JSON.parse(localStorage.getItem("kanbanCards"));
+    if (data) {
+      const columns = document.querySelectorAll(".column");
+      data.forEach((columnCards, index) => {
+        const cardContainer = columns[index].querySelector(".card-container");
+        columnCards.forEach((cardText) => {
+          const cardEl = document.createElement("div");
+          cardEl.className = "card";
+          cardEl.textContent = cardText;
+
+          const deleteBtn = document.createElement("span");
+          deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
+          deleteBtn.className = "delete-btn";
+          deleteBtn.onclick = (e) => {
+            const card = e.target.closest(".card");
+            card.parentNode.removeChild(card);
+            saveCardsToLocalStorage();
+          };
+
+          cardEl.appendChild(deleteBtn);
+          cardContainer.appendChild(cardEl);
+        });
+      });
+    }
+  }
 });
