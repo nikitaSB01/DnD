@@ -46,16 +46,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("mousedown", (e) => {
     e.preventDefault();
-
     if (e.target.classList.contains("card")) {
       draggedEl = e.target;
+
       const rect = draggedEl.getBoundingClientRect();
       offsetX = e.clientX - rect.left;
       offsetY = e.clientY - rect.top;
 
+      const computedStyle = getComputedStyle(draggedEl);
       initialContainer = draggedEl.parentNode;
-      draggedEl.style.position = "absolute"; // Устанавливаем позиционирование
-      draggedEl.style.zIndex = "1000"; // Повышаем z-index
+      draggedEl.style.width = computedStyle.width;
+      draggedEl.style.height = computedStyle.height;
+
+      draggedEl.classList.add("dragged");
+
+      document.documentElement.style.cursor = "grabbing";
+
+      // Убираем указатель для всех карт и кнопок, кроме перетаскиваемой
+      document.querySelectorAll(".card, .addCardBtn").forEach((el) => {
+        if (el !== draggedEl) el.classList.add("no-pointer");
+      });
+
       moveAt(e.pageX, e.pageY);
     }
   });
@@ -68,14 +79,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("mousemove", (e) => {
     if (draggedEl) {
       moveAt(e.pageX, e.pageY);
-      draggedEl.style.cursor = "grabbing"; // Курсор при перетаскивании
     }
   });
 
   document.addEventListener("mouseup", (e) => {
     e.preventDefault();
     if (draggedEl) {
-      draggedEl.style.cursor = "grab"; // Возвращаем курсор
+      draggedEl.style.cursor = "grab";
       const columnUnder = document
         .elementFromPoint(e.clientX, e.clientY)
         .closest(".column");
@@ -89,12 +99,18 @@ document.addEventListener("DOMContentLoaded", () => {
         initialContainer.appendChild(draggedEl); // Возвращаем карточку в первоначальный контейнер
       }
 
-      // Сбросим все стили позиционирования
-      draggedEl.style.position = "";
-      draggedEl.style.zIndex = "";
-      draggedEl.style.left = "";
-      draggedEl.style.top = "";
+      draggedEl.classList.remove("dragged");
+
+      // Включаем обратно указатель для всех карт и кнопок
+      document.querySelectorAll(".card, .addCardBtn").forEach((el) => {
+        el.classList.remove("no-pointer");
+      });
+
+      document.documentElement.style.cursor = "";
+
       draggedEl = null;
     }
   });
 });
+
+//todo не получается в колонке вверх вниз
