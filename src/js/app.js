@@ -28,8 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const deleteBtn = document.createElement("span");
       deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
       deleteBtn.className = "delete-btn";
-      deleteBtn.onclick = () => {
-        cardContainer.removeChild(cardEl);
+      deleteBtn.onclick = (e) => {
+        const card = e.target.closest(".card"); // находим ближайшего родителя с классом "card"
+        card.parentNode.removeChild(card); // удаляем найденный элемент
       };
 
       cardEl.appendChild(input);
