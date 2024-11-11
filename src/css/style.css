@@ -120,3 +120,7 @@ h3 {
   padding: 5px; /* Внутренний отступ */
   cursor: pointer; /* Указатель для кнопки */
 }
+
+.cardCardBtn {
+  cursor: grabbing;
+}

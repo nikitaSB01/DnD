@@ -9,6 +9,12 @@ const moveThreshold = 10; // Минимальное расстояние для 
 
 document.addEventListener("mousedown", (e) => {
   e.preventDefault(); // Предотвращаем выделение текста и другие действия при захвате
+  let cards = document.querySelectorAll(".card");
+  let btnsAdd = document.querySelectorAll(".addCardBtn");
+  let arrBtnsCards = [...cards, ...btnsAdd];
+  arrBtnsCards.forEach((el) => {
+    el.classList.add("cardCardBtn");
+  });
 
   if (e.target.classList.contains("card")) {
     draggedEl = e.target;
@@ -138,6 +144,13 @@ document.addEventListener("mousemove", (e) => {
 });
 
 document.addEventListener("mouseup", (e) => {
+  let cards = document.querySelectorAll(".card");
+  let btnsAdd = document.querySelectorAll(".addCardBtn");
+  let arrBtnsCards = [...cards, ...btnsAdd];
+  arrBtnsCards.forEach((el) => {
+    el.classList.remove("cardCardBtn");
+  });
+
   if (draggedEl) {
     if (!hasMoved) {
       // Если перемещение не происходило, карточка остается на своем месте
