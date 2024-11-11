@@ -55,7 +55,7 @@ document.addEventListener("mousedown", (e) => {
     draggedEl.classList.add("dragged");
 
     // Прикрепляем карточку к body, чтобы она не ограничивалась контейнером
-    document.body.appendChild(draggedEl);
+    document.body.append(draggedEl);
 
     moveAt(e.pageX, e.pageY);
     hasMoved = false; // Изначально считаем, что карточка не была перемещена
@@ -106,7 +106,7 @@ document.addEventListener("mousemove", (e) => {
     if (insertBeforeCard) {
       initialContainer.insertBefore(placeholder, insertBeforeCard);
     } else {
-      initialContainer.appendChild(placeholder);
+      initialContainer.append(placeholder);
     }
 
     // Если перетаскиваем в другую колонку, перемещаем плейсхолдер
@@ -136,7 +136,7 @@ document.addEventListener("mousemove", (e) => {
         if (insertBeforeCardInNewColumn) {
           cardContainer.insertBefore(placeholder, insertBeforeCardInNewColumn);
         } else {
-          cardContainer.appendChild(placeholder);
+          cardContainer.append(placeholder);
         }
       }
     }
@@ -156,7 +156,7 @@ document.addEventListener("mouseup", (e) => {
       // Если перемещение не происходило, карточка остается на своем месте
       initialContainer.insertBefore(draggedEl, placeholder);
       if (placeholder) {
-        placeholder.parentNode.removeChild(placeholder);
+        placeholder.remove();
       }
     } else {
       // Если перемещение происходило, то размещаем карточку в новой колонке или месте
@@ -174,25 +174,19 @@ document.addEventListener("mouseup", (e) => {
 
         // Убираем placeholder
         if (placeholder) {
-          placeholder.parentNode.removeChild(placeholder);
+          placeholder.remove();
         }
       } else {
         initialContainer.insertBefore(draggedEl, placeholder); // Если карточка не сброшена, возвращаем на место
         if (placeholder) {
-          placeholder.parentNode.removeChild(placeholder);
+          placeholder.remove();
         }
       }
     }
 
     // Очищаем ссылку на перемещаемую карточку
     draggedEl.classList.remove("dragged");
-    draggedEl.style = "";
-    /*  draggedEl.style.position = ""; // Возвращаем обычную позицию карточке
-    draggedEl.style.left = "";
-    draggedEl.style.top = ""; */
-    /*  draggedEl.style.width = "";
-    draggedEl.style.height = "";
-    draggedEl.style.zIndex = ""; */
+    draggedEl.style = ""; // Очищаем стиль карточки
 
     // Устанавливаем курсор в правильное состояние после отпуска
     if (e.target === draggedEl) {
@@ -235,12 +229,12 @@ function loadCardsFromLocalStorage() {
         deleteBtn.className = "delete-btn";
         deleteBtn.onclick = (e) => {
           const card = e.target.closest(".card");
-          card.parentNode.removeChild(card);
+          card.remove();
           saveCardsToLocalStorage();
         };
 
-        cardEl.appendChild(deleteBtn);
-        cardContainer.appendChild(cardEl);
+        cardEl.append(deleteBtn);
+        cardContainer.append(cardEl);
       });
     });
   }
@@ -283,16 +277,15 @@ addCardBtns.forEach((btn) => {
 
     // Вставляем кнопки "Add" и "Cancel" в тот же контейнер, где была кнопка "addCardBtn"
     const btnContainer = clickedBtn.parentElement;
-    btnContainer.appendChild(addNoteBtn);
-    btnContainer.appendChild(cancelBtn);
+    btnContainer.append(addNoteBtn, cancelBtn);
 
     // При нажатии на кнопку "Add" сохраняем заметку
     addNoteBtn.addEventListener("click", () => {
       const cardText = input.value.trim();
       if (cardText) {
         cardEl.textContent = cardText;
-        cardEl.appendChild(deleteBtn);
-        cardContainer.appendChild(cardEl);
+        cardEl.append(deleteBtn);
+        cardContainer.append(cardEl);
         saveCardsToLocalStorage(); // Сохраняем после добавления карточки
         input.value = ""; // Очищаем поле ввода
         addNoteBtn.style.display = "none"; // Скрываем кнопку "Add"
@@ -327,8 +320,8 @@ addCardBtns.forEach((btn) => {
         const cardText = input.value.trim();
         if (cardText) {
           cardEl.textContent = cardText;
-          cardEl.appendChild(deleteBtn);
-          cardContainer.appendChild(cardEl);
+          cardEl.append(deleteBtn);
+          cardContainer.append(cardEl);
           saveCardsToLocalStorage(); // Сохраняем после добавления карточки
           input.value = ""; // Очищаем поле ввода
           addNoteBtn.style.display = "none"; // Скрываем кнопку "Add"
@@ -348,13 +341,13 @@ addCardBtns.forEach((btn) => {
     deleteBtn.className = "delete-btn";
     deleteBtn.onclick = (e) => {
       const card = e.target.closest(".card");
-      card.parentNode.removeChild(card);
+      card.remove();
       saveCardsToLocalStorage(); // Сохраняем после удаления карточки
     };
 
     // Добавляем поля в DOM
-    cardEl.appendChild(input);
-    cardContainer.appendChild(cardEl);
+    cardEl.append(input);
+    cardContainer.append(cardEl);
     input.focus();
   });
 });
