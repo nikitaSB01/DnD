@@ -17,12 +17,15 @@ body {
   background-color: #f5f5f5;
   border-radius: 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .card {
   background-color: rgb(177, 216, 222);
   padding: 10px;
-  margin: 10px 0;
+  margin-bottom: 10px;
   border: 1px solid #ccc;
   border-radius: 20px;
   cursor: grab; /* Курсор для карточки */
@@ -37,10 +40,6 @@ body {
 }
 
 h3 {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.card-container {
   margin-top: 10px;
   margin-bottom: 10px;
 }
@@ -60,7 +59,6 @@ h3 {
 }
 
 .addCardBtn {
-  margin-top: 10px;
   margin-bottom: 10px;
 
   background-color: #69d152; /* Цвет фона для кнопки добавления */
@@ -103,4 +101,22 @@ h3 {
 
 .no-pointer {
   pointer-events: none;
+}
+
+.addNoteBtn {
+  background-color: #6af082; /* Цвет фона для кнопки добавления */
+  color: white; /* Цвет текста */
+  border: none; /* Убираем рамку */
+  border-radius: 20px; /* Скругление углов */
+  padding: 5px; /* Внутренний отступ */
+  cursor: pointer; /* Указатель для кнопки */
+}
+.cancelBtn {
+  margin-top: 5px;
+  background-color: #f42c2c; /* Цвет фона для кнопки добавления */
+  color: white; /* Цвет текста */
+  border: none; /* Убираем рамку */
+  border-radius: 20px; /* Скругление углов */
+  padding: 5px; /* Внутренний отступ */
+  cursor: pointer; /* Указатель для кнопки */
 }

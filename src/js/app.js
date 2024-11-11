@@ -1,14 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const addCardBtn = document.querySelectorAll(".addCardBtn");
+  const addCardBtns = document.querySelectorAll(".addCardBtn");
 
   // Восстанавливаем сохраненные карточки
   loadCardsFromLocalStorage();
 
-  addCardBtn.forEach((btn) => {
+  addCardBtns.forEach((btn) => {
     btn.addEventListener("click", (e) => {
       const clickedBtn = e.currentTarget;
       const cardContainer = clickedBtn.previousElementSibling;
 
+      // Скрываем все кнопки addCardBtn
+      addCardBtns.forEach((btn) => {
+        btn.style.display = "none";
+      });
+
+      // Создаем новое поле ввода
       const cardEl = document.createElement("div");
       cardEl.className = "card";
 
@@ -17,6 +23,57 @@ document.addEventListener("DOMContentLoaded", () => {
       input.placeholder = "Введите текст...";
       input.className = "cardInput";
 
+      // Кнопка для добавления заметки
+      const addNoteBtn = document.createElement("button");
+      addNoteBtn.textContent = "Add";
+      addNoteBtn.className = "addNoteBtn";
+
+      // Кнопка для отмены ввода
+      const cancelBtn = document.createElement("button");
+      cancelBtn.textContent = "Cancel";
+      cancelBtn.className = "cancelBtn";
+
+      // Вставляем кнопки "Add" и "Cancel" в тот же контейнер, где была кнопка "addCardBtn"
+      const btnContainer = clickedBtn.parentElement;
+      btnContainer.appendChild(addNoteBtn);
+      btnContainer.appendChild(cancelBtn);
+
+      // При нажатии на кнопку "Add" сохраняем заметку
+      addNoteBtn.addEventListener("click", () => {
+        const cardText = input.value.trim();
+        if (cardText) {
+          cardEl.textContent = cardText;
+          cardEl.appendChild(deleteBtn);
+          cardContainer.appendChild(cardEl);
+          saveCardsToLocalStorage(); // Сохраняем после добавления карточки
+          input.value = ""; // Очищаем поле ввода
+          addNoteBtn.style.display = "none"; // Скрываем кнопку "Add"
+          cancelBtn.style.display = "none"; // Скрываем кнопку "Cancel"
+          // Возвращаем все кнопки addCardBtn обратно по центру
+          addCardBtns.forEach((btn) => {
+            btn.style.display = "block"; // Возвращаем кнопки в исходное состояние
+            // Центрируем контейнер кнопок
+            btn.parentElement.style.textAlign = "center"; // Центрируем контейнер кнопок
+          });
+        }
+      });
+
+      // При нажатии на кнопку "Cancel" отменяем операцию ввода
+      cancelBtn.addEventListener("click", () => {
+        // Скрываем поле ввода и саму карточку
+        cardEl.style.display = "none";
+        input.style.display = "none";
+        addNoteBtn.style.display = "none";
+        cancelBtn.style.display = "none";
+
+        // Восстанавливаем кнопку addCardBtn в исходное состояние
+        addCardBtns.forEach((btn) => {
+          btn.style.display = "block"; // Возвращаем кнопку
+          btn.parentElement.style.textAlign = "center"; // Центрируем контейнер кнопок
+        });
+      });
+
+      // Слушаем событие "Enter" для сохранения заметки
       input.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
           const cardText = input.value.trim();
@@ -24,8 +81,16 @@ document.addEventListener("DOMContentLoaded", () => {
             cardEl.textContent = cardText;
             cardEl.appendChild(deleteBtn);
             cardContainer.appendChild(cardEl);
-
             saveCardsToLocalStorage(); // Сохраняем после добавления карточки
+            input.value = ""; // Очищаем поле ввода
+            addNoteBtn.style.display = "none"; // Скрываем кнопку "Add"
+            cancelBtn.style.display = "none"; // Скрываем кнопку "Cancel"
+            // Возвращаем все кнопки addCardBtn обратно по центру
+            addCardBtns.forEach((btn) => {
+              btn.style.display = "block"; // Возвращаем кнопки в исходное состояние
+              // Центрируем контейнер кнопок
+              btn.parentElement.style.textAlign = "center"; // Центрируем контейнер кнопок
+            });
           }
         }
       });
@@ -39,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveCardsToLocalStorage(); // Сохраняем после удаления карточки
       };
 
+      // Добавляем поля в DOM
       cardEl.appendChild(input);
       cardContainer.appendChild(cardEl);
       input.focus();
