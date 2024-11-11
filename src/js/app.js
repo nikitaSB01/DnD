@@ -186,9 +186,13 @@ document.addEventListener("mouseup", (e) => {
 
     // Очищаем ссылку на перемещаемую карточку
     draggedEl.classList.remove("dragged");
-    draggedEl.style.position = ""; // Возвращаем обычную позицию карточке
+    draggedEl.style = "";
+    /*  draggedEl.style.position = ""; // Возвращаем обычную позицию карточке
     draggedEl.style.left = "";
-    draggedEl.style.top = "";
+    draggedEl.style.top = ""; */
+    /*  draggedEl.style.width = "";
+    draggedEl.style.height = "";
+    draggedEl.style.zIndex = ""; */
 
     // Устанавливаем курсор в правильное состояние после отпуска
     if (e.target === draggedEl) {
