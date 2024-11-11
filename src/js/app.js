@@ -176,7 +176,14 @@ document.addEventListener("mouseup", (e) => {
     draggedEl.style.position = ""; // Возвращаем обычную позицию карточке
     draggedEl.style.left = "";
     draggedEl.style.top = "";
-    document.documentElement.style.cursor = "grab"; // Возвращаем курсор в состояние "grab"
+
+    // Устанавливаем курсор в правильное состояние после отпуска
+    if (e.target === draggedEl) {
+      document.documentElement.style.cursor = "grab"; // Возвращаем курсор в состояние "grab" на самой карточке
+    } else {
+      document.documentElement.style.cursor = "default"; // Возвращаем курсор в стандартное состояние, если курсор не на карточке
+    }
+
     draggedEl = null;
 
     // Сохраняем в LocalStorage после каждого перемещения
